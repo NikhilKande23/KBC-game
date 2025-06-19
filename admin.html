@@ -84,6 +84,27 @@
             font-weight: bold;
             color: #27ae60;
         }
+        .leaderboard {
+            margin-top: 20px;
+        }
+        .leaderboard-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            background: #ecf0f1;
+        }
+        .leaderboard-item:nth-child(1) {
+            background: #f1c40f;
+            font-weight: bold;
+        }
+        .leaderboard-item:nth-child(2) {
+            background: #bdc3c7;
+        }
+        .leaderboard-item:nth-child(3) {
+            background: #f39c12;
+        }
     </style>
 </head>
 <body>
@@ -100,9 +121,13 @@
         </div>
 
         <div class="panel">
-            <h2>Real-time Scores</h2>
+            <h2>Real-time Scores & Leaderboard</h2>
             <div class="scores-grid" id="scoresGrid">
                 <!-- Scores will be populated here -->
+            </div>
+            <div class="leaderboard" id="leaderboard">
+                <h3>Live Leaderboard</h3>
+                <!-- Leaderboard will be populated here -->
             </div>
         </div>
     </div>
@@ -155,8 +180,7 @@
                 const state = snapshot.val();
                 if (state && state.isStarted) {
                     startGameBtn.disabled = true;
-                    const serverTimeOffset = state.startTime - Date.now();
-                    startTimer(serverTimeOffset);
+                    startTimer(state.startTime, state.duration);
                 } else {
                     startGameBtn.disabled = false;
                     clearInterval(timerInterval);
@@ -165,11 +189,8 @@
             });
 
             scoresRef.on('value', (snapshot) => {
-                const scores = snapshot.val();
-                for (let i = 1; i <= 10; i++) {
-                    const teamScore = scores && scores[`team${i}`] ? scores[`team${i}`].score : 0;
-                    document.getElementById(`score-team-${i}`).textContent = teamScore;
-                }
+                const scores = snapshot.val() || {};
+                updateScoresAndLeaderboard(scores);
             });
 
             function startGame() {
@@ -182,30 +203,31 @@
             }
 
             function resetGame() {
-                if (confirm('Are you sure you want to reset the game? This will clear all scores and stop the timer.')) {
+                if (confirm('Are you sure you want to reset the game? This will clear all scores, saved progress, and stop the timer.')) {
+                    // Reset the main game state
                     gameStateRef.set({
                         isStarted: false,
                         startTime: null,
                         duration: null
                     });
-                    scoresRef.set(null); // Clear all scores
+                    // Clear all team scores
+                    scoresRef.set(null); 
+                    // Clear all saved team progress
+                    database.ref('teamStates').set(null);
                 }
             }
 
-            function startTimer(serverTimeOffset) {
+            function startTimer(startTime, duration) {
                 clearInterval(timerInterval);
-                const duration = 20 * 60 * 1000;
 
                 timerInterval = setInterval(() => {
-                    const now = Date.now() + serverTimeOffset;
-                    const elapsed = now - (gameStateRef.child('startTime').val() || now);
+                    const elapsed = Date.now() - startTime;
                     const remaining = duration - elapsed;
 
                     if (remaining <= 0) {
                         clearInterval(timerInterval);
                         timerDisplay.textContent = "00:00";
-                        // Optionally, you can auto-reset or end the game here
-                        // gameStateRef.update({ isStarted: false });
+                        gameStateRef.update({ isStarted: false });
                         return;
                     }
 
@@ -213,6 +235,31 @@
                     const seconds = Math.floor((remaining / 1000) % 60);
                     timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                 }, 1000);
+            }
+
+            function updateScoresAndLeaderboard(scores) {
+                const leaderboard = document.getElementById('leaderboard');
+                let leaderboardHtml = '<h3>Live Leaderboard</h3>';
+                const sortedScores = [];
+
+                for (let i = 1; i <= 10; i++) {
+                    const teamScore = scores[`team${i}`] ? scores[`team${i}`].score : 0;
+                    document.getElementById(`score-team-${i}`).textContent = teamScore;
+                    sortedScores.push({ team: `Team ${i}`, score: teamScore });
+                }
+
+                sortedScores.sort((a, b) => b.score - a.score);
+
+                sortedScores.forEach(item => {
+                    leaderboardHtml += `
+                        <div class="leaderboard-item">
+                            <span>${item.team}</span>
+                            <span>${item.score}</span>
+                        </div>
+                    `;
+                });
+
+                leaderboard.innerHTML = leaderboardHtml;
             }
         });
     </script>
