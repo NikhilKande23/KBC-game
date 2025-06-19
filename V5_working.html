@@ -1769,6 +1769,12 @@
             // Advance to next year
             gameState.currentYear++;
             
+            // Save the current state to Firebase for persistence
+            if (teamId) {
+                const teamStateRef = database.ref(`teamStates/team${teamId}`);
+                teamStateRef.set(gameState);
+            }
+            
             if (gameState.currentYear <= 4) {
                 // Set carryover budget for next year
                 gameState.carryoverBudget = nextYearCarryover;
@@ -2170,8 +2176,8 @@
                         <p style="margin: 10px 0;"><strong>Budget Strategy:</strong> Balance high-impact investments early with flexibility for market changes</p>
                     </div>
                     
-                    <button class="action-btn success" onclick="location.reload()">
-                        🔄 Play Again with Different Strategy
+                    <button class="action-btn success" onclick="window.location.href='index.html'">
+                        🔄 Return to Main Page
                     </button>
                 </div>
             `;
@@ -2225,21 +2231,21 @@
             }, 5000);
         }
 
-        function startTimer(duration, serverTimeOffset) {
+        function startTimer(startTime, duration) {
             clearInterval(gameTimerInterval);
             const timerDisplay = document.getElementById('gameTimerDisplay');
 
             gameTimerInterval = setInterval(() => {
-                const now = Date.now() + serverTimeOffset;
-                const elapsed = now - (gameStateRef.child('startTime').val() || now);
+                const elapsed = Date.now() - startTime;
                 const remaining = duration - elapsed;
 
                 if (remaining <= 0) {
                     clearInterval(gameTimerInterval);
                     timerDisplay.textContent = "00:00";
-                    // Disable game controls when time is up
-                    document.getElementById('executeButton').disabled = true;
-                    showMessage('Time is up! No more actions can be taken.', 'error');
+                    if (!gameState.gameCompleted) {
+                        showGameResults();
+                        showMessage('Time is up! The game has ended.', 'error');
+                    }
                     return;
                 }
 
@@ -2266,28 +2272,56 @@
             
             startGameBtn.disabled = true; // Disable by default
 
-            // Listen for game state from Firebase
-            gameStateRef.on('value', (snapshot) => {
-                const state = snapshot.val();
-                if (state && state.isStarted) {
-                    startGameBtn.disabled = false;
-                    waitMessage.textContent = 'The game has started! Begin your journey.';
-                    waitMessage.style.color = '#27ae60';
-                    const serverTimeOffset = state.startTime - Date.now();
-                    startTimer(state.duration, serverTimeOffset);
+            const teamStateRef = database.ref(`teamStates/team${teamId}`);
+            teamStateRef.once('value').then((snapshot) => {
+                const savedState = snapshot.val();
+                if (savedState) {
+                    // A saved state exists, load it.
+                    gameState = savedState;
+                    console.log("Loaded saved game state for Team " + teamId, gameState);
+                    
+                    // If the game is already completed, show results immediately.
+                    if (gameState.gameCompleted) {
+                        showGameResults();
+                        return; // Stop further initialization
+                    }
+                    
+                    // Restore the UI to the correct state
+                    resetForNextYear(); 
                 } else {
-                    startGameBtn.disabled = true;
-                    waitMessage.textContent = 'Please wait for the administrator to start the game.';
-                    waitMessage.style.color = '#c0392b';
-                    clearInterval(gameTimerInterval);
-                    document.getElementById('gameTimerDisplay').textContent = "20:00";
+                    console.log("No saved state for Team " + teamId + ". Starting a new game.");
+                    // Initial UI setup for a new game
+                    updateDisplay();
+                    updateInvestmentSummary();
+                    updateCarryoverBudgetDisplay();
                 }
+
+                // Attach the listener for admin controls AFTER loading the initial state
+                gameStateRef.on('value', (stateSnapshot) => {
+                    const state = stateSnapshot.val();
+                    if (state && state.isStarted) {
+                        startGameBtn.disabled = false;
+                        waitMessage.style.display = 'none';
+                        startTimer(state.startTime, state.duration);
+                    } else {
+                        startGameBtn.disabled = true;
+                        waitMessage.style.display = 'block';
+                        waitMessage.textContent = 'Please wait for the administrator to start the game.';
+                        waitMessage.style.color = '#c0392b';
+                        
+                        if (document.body.classList.contains('game-started')) {
+                            document.getElementById('gameInterface').style.display = 'none';
+                            document.getElementById('gameSelection').style.display = 'block';
+                            document.body.classList.remove('game-started');
+                        }
+
+                        clearInterval(gameTimerInterval);
+                        document.getElementById('gameTimerDisplay').textContent = "20:00";
+                    }
+                });
             });
 
             startGameBtn.addEventListener('click', startGame);
-            updateDisplay();
-            updateInvestmentSummary();
-            updateCarryoverBudgetDisplay();
         });
     </script>
 </body>
