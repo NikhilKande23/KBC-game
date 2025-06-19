@@ -112,13 +112,6 @@
                 teamLink.className = 'team-link';
                 teamLink.textContent = `Team ${i}`;
                 teamLink.id = `team-link-${i}`;
-                teamLink.classList.add('disabled-link'); // Start as disabled
-                teamLink.onclick = (e) => {
-                    if (teamLink.classList.contains('disabled-link')) {
-                        e.preventDefault();
-                        alert('The game has not been started by the administrator yet.');
-                    }
-                };
                 teamGrid.appendChild(teamLink);
             }
 
@@ -126,26 +119,16 @@
             const gameRef = database.ref('gameState');
             gameRef.on('value', (snapshot) => {
                 const gameState = snapshot.val();
+                const statusText = document.querySelector('p');
                 if (gameState && gameState.isStarted) {
-                    document.querySelectorAll('.team-link').forEach(link => {
-                        link.classList.remove('disabled-link');
-                    });
-                     document.querySelector('p').textContent = 'The game has started! Please click on your team link.';
+                    statusText.textContent = 'The game has started! Please click on your team link.';
+                    statusText.style.color = '#27ae60';
                 } else {
-                    document.querySelectorAll('.team-link').forEach(link => {
-                        link.classList.add('disabled-link');
-                    });
-                    document.querySelector('p').textContent = 'Please wait for the administrator to start the game.';
+                    statusText.textContent = 'Please wait for the administrator to start the game.';
+                    statusText.style.color = '#7f8c8d';
                 }
             });
         });
     </script>
-    <style>
-        .disabled-link {
-            pointer-events: none;
-            opacity: 0.6;
-            background-color: #e0e0e0;
-        }
-    </style>
 </body>
 </html>
