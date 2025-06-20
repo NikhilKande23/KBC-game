@@ -2092,6 +2092,14 @@
         }
 
         function showGameResults() {
+            // First, mark the game as completed and save the final state.
+            // This ensures the admin panel gets the update immediately.
+            gameState.gameCompleted = true;
+            if (teamId) {
+                const teamStateRef = database.ref(`teamStates/team${teamId}`);
+                teamStateRef.set(gameState);
+            }
+
             const totalScore = calculateFinalScore();
             const crossedChasm = gameState.kpis.marketShare >= 30;
             const scoringTargets = gameState.kpis.profitability >= 5 && gameState.kpis.roic >= 10;
@@ -2205,14 +2213,6 @@
             const finalScore = Object.entries(normalizedKPIs).reduce((total, [kpi, value]) => {
                 return total + (value * weights[kpi]);
             }, 0);
-
-            // Push score to Firebase
-            if (teamScoreRef) {
-                teamScoreRef.set({
-                    score: Math.round(finalScore),
-                    timestamp: Date.now()
-                });
-            }
 
             return finalScore;
         }
