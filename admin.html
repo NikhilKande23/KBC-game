@@ -63,47 +63,72 @@
         .action-btn.danger:hover:not(:disabled) {
             background: #c0392b;
         }
-        .scores-grid {
+        .leaderboard-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
             gap: 20px;
         }
-        .score-card {
+        .leaderboard-card {
             background: #f8f9fa;
             border: 2px solid #e9ecef;
             border-radius: 12px;
             padding: 20px;
-            text-align: center;
         }
-        .score-card h3 {
-            margin-bottom: 10px;
-            color: #34495e;
+        .leaderboard-card.chasm-crossed {
+            background: #d4edda;
+            border-color: #28a745;
         }
-        .score-value {
-            font-size: 2.5rem;
+        .leaderboard-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        .leaderboard-card .score {
+            font-size: 2rem;
             font-weight: bold;
             color: #27ae60;
+            margin-bottom: 15px;
+            text-align: center;
         }
-        .leaderboard {
-            margin-top: 20px;
+        .kpi-list {
+            list-style: none;
+            padding: 0;
         }
-        .leaderboard-item {
+        .kpi-list li {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #ecf0f1;
+            font-size: 0.9rem;
+        }
+        .kpi-list li:last-child {
+            border-bottom: none;
+        }
+        .kpi-list li span:first-child {
+            font-weight: 500;
+            color: #34495e;
+        }
+        .ladder-leaderboard {
+            margin-top: 30px;
+            padding: 20px;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+        }
+        .ladder-item {
             display: flex;
             justify-content: space-between;
             padding: 12px;
             border-radius: 8px;
             margin-bottom: 8px;
             background: #ecf0f1;
+            font-weight: 500;
         }
-        .leaderboard-item:nth-child(1) {
-            background: #f1c40f;
+        .ladder-item.chasm-crossed {
+            background: #28a745;
+            color: white;
             font-weight: bold;
-        }
-        .leaderboard-item:nth-child(2) {
-            background: #bdc3c7;
-        }
-        .leaderboard-item:nth-child(3) {
-            background: #f39c12;
         }
     </style>
 </head>
@@ -121,14 +146,14 @@
         </div>
 
         <div class="panel">
-            <h2>Real-time Scores & Leaderboard</h2>
-            <div class="scores-grid" id="scoresGrid">
-                <!-- Scores will be populated here -->
+            <h2>Live Leaderboard</h2>
+            <div class="leaderboard-grid" id="leaderboardGrid">
+                <!-- Leaderboard cards will be populated here -->
             </div>
-            <div class="leaderboard" id="leaderboard">
-                <h3>Live Leaderboard</h3>
-                <!-- Leaderboard will be populated here -->
-            </div>
+        </div>
+        <div class="ladder-leaderboard" id="ladderLeaderboard">
+             <h2>Score Ladder</h2>
+             <!-- Ladder leaderboard will be populated here -->
         </div>
     </div>
 
@@ -151,25 +176,50 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         const gameStateRef = database.ref('gameState');
-        const scoresRef = database.ref('scores');
+        const teamStatesRef = database.ref('teamStates');
         let timerInterval;
+
+        // --- Scoring Logic (copied from game page for consistency) ---
+        const scoreWeights = {
+            revenue: 0.15,
+            marketShare: 0.30,
+            profitability: 0.20,
+            satisfaction: 0.15,
+            roic: 0.20
+        };
+
+        function calculateFinalScore(kpis) {
+            if (!kpis) return 0;
+            const normalizedKPIs = {
+                revenue: Math.min(kpis.revenue / 5000, 1) * 100,
+                marketShare: Math.min(kpis.marketShare / 50, 1) * 100,
+                profitability: Math.min(Math.max(kpis.profitability + 20, 0) / 45, 1) * 100,
+                satisfaction: kpis.satisfaction,
+                roic: Math.min(Math.max(kpis.roic + 20, 0) / 90, 1) * 100
+            };
+            const finalScore = Object.entries(normalizedKPIs).reduce((total, [kpi, value]) => {
+                return total + (value * scoreWeights[kpi]);
+            }, 0);
+            return Math.round(finalScore);
+        }
+        // --- End Scoring Logic ---
 
         document.addEventListener('DOMContentLoaded', function() {
             const startGameBtn = document.getElementById('startGameBtn');
             const resetGameBtn = document.getElementById('resetGameBtn');
             const timerDisplay = document.getElementById('timerDisplay');
-            const scoresGrid = document.getElementById('scoresGrid');
-
-            // Initialize score cards
-            for (let i = 1; i <= 10; i++) {
-                const scoreCard = document.createElement('div');
-                scoreCard.className = 'score-card';
-                scoreCard.innerHTML = `
-                    <h3>Team ${i}</h3>
-                    <div class="score-value" id="score-team-${i}">0</div>
-                `;
-                scoresGrid.appendChild(scoreCard);
-            }
+            const teamNames = [
+                "Team RAM- Rapid Action Minds",
+                "Team GB-Giggle Bytes",
+                "Team WiFi- We're fun inside",
+                "Team AI- Accelerated Innovators",
+                "Team IP- Infinite Pings",
+                "Team WAF- We are Fabulous",
+                "Team TAG- Think, Act, Grow",
+                "Team SSO- Smart Solutions only",
+                "Team TB- Tech Brigade",
+                "Team MB- Mega Buddies"
+            ];
 
             // Event Listeners
             startGameBtn.addEventListener('click', startGame);
@@ -188,9 +238,9 @@
                 }
             });
 
-            scoresRef.on('value', (snapshot) => {
-                const scores = snapshot.val() || {};
-                updateScoresAndLeaderboard(scores);
+            teamStatesRef.on('value', (snapshot) => {
+                const teamStates = snapshot.val() || {};
+                updateLeaderboard(teamStates);
             });
 
             function startGame() {
@@ -204,62 +254,86 @@
 
             function resetGame() {
                 if (confirm('Are you sure you want to reset the game? This will clear all scores, saved progress, and stop the timer.')) {
-                    // Reset the main game state
-                    gameStateRef.set({
-                        isStarted: false,
-                        startTime: null,
-                        duration: null
-                    });
-                    // Clear all team scores
-                    scoresRef.set(null); 
-                    // Clear all saved team progress
+                    gameStateRef.set({ isStarted: false, startTime: null, duration: null });
                     database.ref('teamStates').set(null);
                 }
             }
 
             function startTimer(startTime, duration) {
                 clearInterval(timerInterval);
-
                 timerInterval = setInterval(() => {
                     const elapsed = Date.now() - startTime;
                     const remaining = duration - elapsed;
-
                     if (remaining <= 0) {
                         clearInterval(timerInterval);
                         timerDisplay.textContent = "00:00";
                         gameStateRef.update({ isStarted: false });
                         return;
                     }
-
                     const minutes = Math.floor((remaining / 1000) / 60);
                     const seconds = Math.floor((remaining / 1000) % 60);
                     timerDisplay.textContent = `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
                 }, 1000);
             }
 
-            function updateScoresAndLeaderboard(scores) {
-                const leaderboard = document.getElementById('leaderboard');
-                let leaderboardHtml = '<h3>Live Leaderboard</h3>';
-                const sortedScores = [];
+            function updateLeaderboard(teamStates) {
+                const leaderboardGrid = document.getElementById('leaderboardGrid');
+                const ladderLeaderboard = document.getElementById('ladderLeaderboard');
+                let teamsData = [];
 
-                for (let i = 1; i <= 10; i++) {
-                    const teamScore = scores[`team${i}`] ? scores[`team${i}`].score : 0;
-                    document.getElementById(`score-team-${i}`).textContent = teamScore;
-                    sortedScores.push({ team: `Team ${i}`, score: teamScore });
+                // Populate data for all 10 teams, using saved state or defaults
+                for (let i = 0; i < 10; i++) {
+                    const teamId = `team${i + 1}`;
+                    const state = teamStates[teamId];
+                    const kpis = state ? state.kpis : { marketShare: 0, profitability: 0, roic: 0, revenue: 0, satisfaction: 0 };
+                    const score = state && state.gameCompleted ? calculateFinalScore(kpis) : 0;
+                    const crossedChasm = state && state.gameCompleted ? (kpis.marketShare >= 30 && kpis.profitability >= 5 && kpis.roic >= 10) : false;
+                    
+                    teamsData.push({
+                        teamName: teamNames[i],
+                        score: score,
+                        kpis: kpis,
+                        crossedChasm: crossedChasm,
+                        isCompleted: state ? state.gameCompleted : false
+                    });
                 }
 
-                sortedScores.sort((a, b) => b.score - a.score);
+                // Sort teams by score for the ladder
+                const sortedForLadder = [...teamsData].sort((a, b) => b.score - a.score);
 
-                sortedScores.forEach(item => {
-                    leaderboardHtml += `
-                        <div class="leaderboard-item">
-                            <span>${item.team}</span>
-                            <span>${item.score}</span>
+                // Generate HTML for detailed cards (unsorted, by team number)
+                let detailedHtml = '';
+                teamsData.forEach(team => {
+                    detailedHtml += `
+                        <div class="leaderboard-card ${team.crossedChasm ? 'chasm-crossed' : ''}">
+                            <h3>
+                                ${team.teamName}
+                                ${team.crossedChasm ? '🏆' : ''}
+                            </h3>
+                            <div class="score">Score: ${team.score}</div>
+                            <ul class="kpi-list">
+                                <li><span>Market Share:</span> <span>${team.kpis.marketShare.toFixed(1)}%</span></li>
+                                <li><span>Profitability:</span> <span>${team.kpis.profitability.toFixed(1)}%</span></li>
+                                <li><span>ROIC:</span> <span>${Math.round(team.kpis.roic)}%</span></li>
+                                <li><span>Revenue:</span> <span>₹${Math.round(team.kpis.revenue)}Cr</span></li>
+                                <li><span>Satisfaction:</span> <span>${Math.round(team.kpis.satisfaction)}%</span></li>
+                            </ul>
                         </div>
                     `;
                 });
+                leaderboardGrid.innerHTML = detailedHtml;
 
-                leaderboard.innerHTML = leaderboardHtml;
+                // Generate HTML for ladder leaderboard
+                let ladderHtml = '<h2>Score Ladder</h2>';
+                sortedForLadder.forEach(team => {
+                    ladderHtml += `
+                        <div class="ladder-item ${team.crossedChasm ? 'chasm-crossed' : ''}">
+                            <span>${team.teamName}</span>
+                            <span>${team.score}</span>
+                        </div>
+                    `;
+                });
+                ladderLeaderboard.innerHTML = ladderHtml;
             }
         });
     </script>
