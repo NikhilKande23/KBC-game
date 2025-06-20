@@ -716,7 +716,7 @@
                     <!-- Tab Navigation -->
                     <div class="tab-navigation">
                         <button class="tab-btn active" onclick="showTab('dashboard')">📊 KPI Dashboard</button>
-                        <button class="tab-btn" onclick="showTab('platform')">🏗️ Platform & Manufacturing</button>
+                        <button class="tab-btn" onclick="showTab('platform')">🏗️ Manufacturing</button>
                         <button class="tab-btn" onclick="showTab('customer')">👥 Customer Experience</button>
                         <button class="tab-btn" onclick="showTab('enterprise')">💼 Enterprise Applications</button>
                         <button class="tab-btn" onclick="showTab('analytics')">📈 Analytics & Intelligence</button>
@@ -764,11 +764,11 @@
                         </div>
                     </div>
                     
-                    <!-- Platform & Manufacturing Tab -->
+                    <!-- Manufacturing -->
                     <div class="tab-content" id="platform">
-                        <h2>🏗️ Platform & Manufacturing IT</h2>
+                        <h2>🏗️ Manufacturing</h2>
                         <p style="color: #7f8c8d; margin-bottom: 25px;">
-                            Choose your smart factory strategy. Each decision impacts scalability, costs, and efficiency.
+                            Choose your factory digitalization strategy. Each decision impacts scalability, costs, and efficiency.
                         </p>
                         
                         <div class="investment-section">
@@ -854,7 +854,7 @@
                                 <div class="investment-card" data-category="customer_journey" data-option="channel_specific" onclick="selectInvestment('customer_journey', 'channel_specific', 15)">
                                     <div class="investment-title">📊 Channel-Specific</div>
                                     <div class="investment-description">
-                                        Separate digital and dealer experiences
+                                        Different digital (Online) and dealer (physical/offline) experiences for Customers
                                     </div>
                                     <div class="investment-cost">Cost: ₹15Cr</div>
                                     <div class="budget-slider" id="customer_journey-channel_specific-slider" style="display: none;">
@@ -868,7 +868,7 @@
                                 <div class="investment-card" data-category="customer_journey" data-option="basic_digital" onclick="selectInvestment('customer_journey', 'basic_digital', 4)">
                                     <div class="investment-title">💻 Basic Digitization</div>
                                     <div class="investment-description">
-                                        Simple website and basic dealer tools
+                                        Simple website and basic dealer management tools
                                     </div>
                                     <div class="investment-cost">Cost: ₹4Cr</div>
                                     <div class="budget-slider" id="customer_journey-basic_digital-slider" style="display: none;">
@@ -889,9 +889,9 @@
                             
                             <div class="investment-options">
                                 <div class="investment-card" data-category="service_network" data-option="predictive" onclick="selectInvestment('service_network', 'predictive', 20)">
-                                    <div class="investment-title">🤖 Predictive Integrated Planning</div>
+                                    <div class="investment-title">🤖 Predictive Integrated Business Planning</div>
                                     <div class="investment-description">
-                                        AI-driven service prediction, integrated supply chain
+                                        AI-driven service prediction, fully integrated supply chain from Demand to Source
                                     </div>
                                     <div class="investment-cost">Cost: ₹20Cr</div>
                                     <div class="budget-slider" id="service_network-predictive-slider" style="display: none;">
@@ -919,7 +919,7 @@
                                 <div class="investment-card" data-category="service_network" data-option="traditional" onclick="selectInvestment('service_network', 'traditional', 6)">
                                     <div class="investment-title">📅 Scheduled Traditional</div>
                                     <div class="investment-description">
-                                        Calendar-based service appointments
+                                        Basic Calendar-based service appointments
                                     </div>
                                     <div class="investment-cost">Cost: ₹6Cr</div>
                                     <div class="budget-slider" id="service_network-traditional-slider" style="display: none;">
@@ -964,7 +964,7 @@
                                 <div class="investment-card" data-category="erp" data-option="sap_onprem" onclick="selectInvestment('erp', 'sap_onprem', 28)">
                                     <div class="investment-title">🏢 SAP On-Premise</div>
                                     <div class="investment-description">
-                                        Traditional ERP with full control, higher maintenance
+                                        Traditional On-Prem hosted ERP with full control, higher maintenance
                                     </div>
                                     <div class="investment-cost">Cost: ₹28Cr</div>
                                     <div class="budget-slider" id="erp-sap_onprem-slider" style="display: none;">
@@ -978,7 +978,7 @@
                                 <div class="investment-card" data-category="erp" data-option="legacy_enhance" onclick="selectInvestment('erp', 'legacy_enhance', 10)">
                                     <div class="investment-title">🔄 Legacy System Enhancement</div>
                                     <div class="investment-description">
-                                        Upgrade existing systems, limited new capabilities
+                                        Upgrade existing systems, build very limited new capabilities
                                     </div>
                                     <div class="investment-cost">Cost: ₹10Cr</div>
                                     <div class="budget-slider" id="erp-legacy_enhance-slider" style="display: none;">
@@ -1001,7 +1001,7 @@
                                 <div class="investment-card" data-category="data_platform" data-option="lakehouse" onclick="selectInvestment('data_platform', 'lakehouse', 25)">
                                     <div class="investment-title">🏗️ Enterprise Data Lakehouse</div>
                                     <div class="investment-description">
-                                        Unified analytics platform, real-time insights, ML capabilities
+                                        Unified analytics platform, real-time insights, supports AI/Gen AI capabilities
                                     </div>
                                     <div class="investment-cost">Cost: ₹25Cr</div>
                                     <div class="budget-slider" id="data_platform-lakehouse-slider" style="display: none;">
@@ -1015,7 +1015,7 @@
                                 <div class="investment-card" data-category="data_platform" data-option="warehouse" onclick="selectInvestment('data_platform', 'warehouse', 15)">
                                     <div class="investment-title">📊 Traditional Data Warehouse</div>
                                     <div class="investment-description">
-                                        Structured reporting, historical analytics
+                                        Structured reporting, historical analytics focused on MIS
                                     </div>
                                     <div class="investment-cost">Cost: ₹15Cr</div>
                                     <div class="budget-slider" id="data_platform-warehouse-slider" style="display: none;">
@@ -1047,7 +1047,7 @@
                     <div class="tab-content" id="analytics">
                         <h2>📈 Analytics & Intelligence</h2>
                         <p style="color: #7f8c8d; margin-bottom: 25px;">
-                            Choose your business intelligence approach to drive data-driven decisions.
+                            Choose your business intelligence approach to power data-driven decisions.
                         </p>
                         
                         <div class="investment-section">
@@ -1060,7 +1060,7 @@
                                 <div class="investment-card" data-category="business_intelligence" data-option="generative_bi" onclick="selectInvestment('business_intelligence', 'generative_bi', 20)">
                                     <div class="investment-title">🤖 Generative BI</div>
                                     <div class="investment-description">
-                                        AI-powered insights, natural language queries, predictive analytics
+                                        AI-powered insights, natural language queries, democratization of Data
                                     </div>
                                     <div class="investment-cost">Cost: ₹20Cr</div>
                                     <div class="budget-slider" id="business_intelligence-generative_bi-slider" style="display: none;">
@@ -1074,7 +1074,7 @@
                                 <div class="investment-card" data-category="business_intelligence" data-option="standard_bi" onclick="selectInvestment('business_intelligence', 'standard_bi', 12)">
                                     <div class="investment-title">📊 Standard BI</div>
                                     <div class="investment-description">
-                                        Traditional dashboards, standard reporting
+                                        DIT developed traditional visualization dashboards, limited DIY capabilities
                                     </div>
                                     <div class="investment-cost">Cost: ₹12Cr</div>
                                     <div class="budget-slider" id="business_intelligence-standard_bi-slider" style="display: none;">
@@ -1088,7 +1088,7 @@
                                 <div class="investment-card" data-category="business_intelligence" data-option="manual_reporting" onclick="selectInvestment('business_intelligence', 'manual_reporting', 4)">
                                     <div class="investment-title">📋 Manual Reporting</div>
                                     <div class="investment-description">
-                                        Excel-based reporting, basic charts
+                                        Continue with Excel-based reporting wherever Dashboards don't exist, basic visualization
                                     </div>
                                     <div class="investment-cost">Cost: ₹4Cr</div>
                                     <div class="budget-slider" id="business_intelligence-manual_reporting-slider" style="display: none;">
@@ -1112,14 +1112,14 @@
                         <div class="investment-section">
                             <div class="section-header">
                                 <div class="section-icon">🎯</div>
-                                <div class="section-title">Marketing Tech</div>
+                                <div class="section-title">MarTech</div>
                             </div>
                             
                             <div class="investment-options">
                                 <div class="investment-card" data-category="marketing_tech" data-option="ai_personalization" onclick="selectInvestment('marketing_tech', 'ai_personalization', 22)">
                                     <div class="investment-title">🚀 AI Personalization</div>
                                     <div class="investment-description">
-                                        Dynamic pricing, personalized recommendations, behavioral targeting
+                                        Dynamic pricing, personalized recommendations, behavior-focused advertising
                                     </div>
                                     <div class="investment-cost">Cost: ₹22Cr</div>
                                     <div class="budget-slider" id="marketing_tech-ai_personalization-slider" style="display: none;">
@@ -1133,7 +1133,7 @@
                                 <div class="investment-card" data-category="marketing_tech" data-option="traditional_digital" onclick="selectInvestment('marketing_tech', 'traditional_digital', 14)">
                                     <div class="investment-title">📱 Traditional Digital</div>
                                     <div class="investment-description">
-                                        Standard digital marketing, social media, SEO
+                                        Standard Digital marketing leveraging Social media, SEO etc.
                                     </div>
                                     <div class="investment-cost">Cost: ₹14Cr</div>
                                     <div class="budget-slider" id="marketing_tech-traditional_digital-slider" style="display: none;">
@@ -1145,7 +1145,7 @@
                                 </div>
                                 
                                 <div class="investment-card" data-category="marketing_tech" data-option="word_of_mouth" onclick="selectInvestment('marketing_tech', 'word_of_mouth', 2)">
-                                    <div class="investment-title">🗣️ Word-of-Mouth/Influence-led</div>
+                                    <div class="investment-title">🗣️ Word-of-Mouth/Influencer-led</div>
                                     <div class="investment-description">
                                         Referral programs, influencer partnerships, community building
                                     </div>
@@ -1165,7 +1165,7 @@
                     <div class="tab-content" id="security">
                         <h2>🔒 Security</h2>
                         <p style="color: #7f8c8d; margin-bottom: 25px;">
-                            Protect your digital infrastructure with the right security architecture.
+                            Protect your digital infrastructure with the right Information security architecture.
                         </p>
                         
                         <div class="investment-section">
@@ -1192,7 +1192,7 @@
                                 <div class="investment-card" data-category="security" data-option="hybrid" onclick="selectInvestment('security', 'hybrid', 13)">
                                     <div class="investment-title">🔀 Hybrid Approach</div>
                                     <div class="investment-description">
-                                        Mix of modern and traditional security
+                                        Mix of modern and traditional security. Trust, but verify.
                                     </div>
                                     <div class="investment-cost">Cost: ₹13Cr</div>
                                     <div class="budget-slider" id="security-hybrid-slider" style="display: none;">
@@ -2179,10 +2179,8 @@
                     
                     <div style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; text-align: left;">
                         <h4>📈 Strategic Recommendations for Next Iteration:</h4>
-                        <p style="margin: 10px 0;"><strong>Year 1-2 Focus:</strong> Prioritize Industry 4.0 + Zero-trust + AI Personalization for maximum synergy bonuses</p>
-                        <p style="margin: 10px 0;"><strong>Year 3-4 Focus:</strong> Enterprise Data Lakehouse + course correction as needed based on market evolution</p>
-                        <p style="margin: 10px 0;"><strong>Budget Strategy:</strong> Balance high-impact investments early with flexibility for market changes</p>
-                    </div>
+                        <p style="margin: 10px 0;"> Pay close attention to external market events. You may have to adapt your game strategy in line with these developments. You may also want to be brave and consider course correction if you feel the need to adapt. Do not be put off by the Penalty applied to the Scores if you strongly feel that you need to be agile and change as per market conditions. Who knows, you may benefit in the long run.</p>
+                          </div>
                     
                     <button class="action-btn success" onclick="window.location.href='index.html'">
                         🔄 Return to Main Page
