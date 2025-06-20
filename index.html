@@ -106,12 +106,25 @@
 
         document.addEventListener('DOMContentLoaded', function() {
             const teamGrid = document.getElementById('teamGrid');
-            for (let i = 1; i <= 10; i++) {
+            const teamNames = [
+                "Team RAM ",
+                "Team GB",
+                "Team WiFi",
+                "Team AI",
+                "Team IP",
+                "Team WAF",
+                "Team TAG",
+                "Team SSO",
+                "Team TB",
+                "Team MB"
+            ];
+
+            for (let i = 0; i < 10; i++) {
                 const teamLink = document.createElement('a');
-                teamLink.href = `V5_working.html?team=${i}`;
+                teamLink.href = `V5_working.html?team=${i + 1}`;
                 teamLink.className = 'team-link';
-                teamLink.textContent = `Team ${i}`;
-                teamLink.id = `team-link-${i}`;
+                teamLink.textContent = teamNames[i];
+                teamLink.id = `team-link-${i + 1}`;
                 teamGrid.appendChild(teamLink);
             }
 
