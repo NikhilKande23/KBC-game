@@ -2261,14 +2261,27 @@
             teamId = urlParams.get('team');
             const startGameBtn = document.getElementById('startGameBtn');
             const waitMessage = document.getElementById('waitMessage');
+            const teamNames = [
+                "Team RAM- Rapid Action Minds",
+                "Team GB-Giggle Bytes",
+                "Team WiFi- We're fun inside",
+                "Team AI- Accelerated Innovators",
+                "Team IP- Infinite Pings",
+                "Team WAF- We are Fabulous",
+                "Team TAG- Think, Act, Grow",
+                "Team SSO- Smart Solutions only",
+                "Team TB- Tech Brigade",
+                "Team MB- Mega Buddies"
+            ];
 
-            if (!teamId) {
-                document.body.innerHTML = '<h1>Error: No team selected. Please go back to the main page.</h1>';
+            if (!teamId || teamId < 1 || teamId > 10) {
+                document.body.innerHTML = '<h1>Error: Invalid team selected. Please go back to the main page.</h1>';
                 return;
             }
 
+            const teamName = teamNames[teamId - 1];
             teamScoreRef = database.ref(`scores/team${teamId}`);
-            document.querySelector('.team-info span').textContent = `Voltara Motors CDIO Dashboard - Team ${teamId}`;
+            document.querySelector('.team-info span').textContent = `Voltara Motors CDIO Dashboard - ${teamName}`;
             
             startGameBtn.disabled = true; // Disable by default
 
